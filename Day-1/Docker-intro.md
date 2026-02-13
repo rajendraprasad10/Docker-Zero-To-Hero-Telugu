@@ -180,13 +180,12 @@ Consistent environments
 
 
 
+# Containerization vs Virtualization
 
-Containerization vs Virtualization
+# Docker vs Virtual Machine
 
-Docker vs Virtual Machine
+# Docker Installation & Its
 
-Docker Installation & Its
+# Architecture
 
-Architecture
-
-Docker Adhoc Commands
+# Docker Adhoc Commands
