@@ -10,9 +10,9 @@ Docker is an open-source containerization platform that allows you to package an
 
 Official platform: Docker
 
-❓ Why Docker Was Created
+## ❓ Why Docker Was Created
 
-Before Docker:
+## Before Docker:
 
 Applications worked on Dev machine
 
@@ -20,7 +20,7 @@ Failed in Testing
 
 Broke in Production
 
-Problems:
+## Problems:
 
 Different OS versions
 
@@ -30,12 +30,12 @@ Dependency conflicts
 
 “It works on my machine” issue
 
-Docker solves this by:
+## Docker solves this by:
 ✔ Packaging app + dependencies
 ✔ Ensuring consistency across environments
 ✔ Lightweight compared to VMs
 
-🖥 Virtual Machines vs Containers
+## 🖥 Virtual Machines vs Containers
 Feature	Virtual Machine	Docker Container
 OS	Full OS per VM	Shares Host OS
 Size	GBs	MBs
@@ -51,7 +51,7 @@ Linux cgroups
 
 🧠 How Docker Works Internally
 
-Docker uses:
+## Docker uses:
 
 Docker Client → You run commands
 
@@ -61,7 +61,7 @@ Docker Engine → Core runtime
 
 Docker Registry → Stores images (e.g., Docker Hub)
 
-Architecture Flow:
+## Architecture Flow:
 docker run nginx
         ↓
 Docker Client
@@ -74,7 +74,7 @@ Create Container
         ↓
 Run Process
 
-📦 What is a Docker Image?
+## 📦 What is a Docker Image?
 
 An Image is a read-only template used to create containers.
 
