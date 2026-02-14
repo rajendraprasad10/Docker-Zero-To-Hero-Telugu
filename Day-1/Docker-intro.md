@@ -10,8 +10,6 @@ Docker is an open-source containerization platform that allows you to package an
 
 Official platform: Docker
 
-## ❓ Why Docker Was Created
-
 ## Before Docker:
 
 Applications worked on Dev machine
@@ -35,22 +33,9 @@ Dependency conflicts
 ✔ Ensuring consistency across environments
 ✔ Lightweight compared to VMs
 
-## 🖥 Virtual Machines vs Containers
-Feature	Virtual Machine	Docker Container
-OS	Full OS per VM	Shares Host OS
-Size	GBs	MBs
-Boot Time	Minutes	Seconds
-Performance	Heavy	Lightweight
-Isolation	Hardware-level	Process-level
-
-Containers are lightweight because they use:
-
-Linux Namespaces
-
-Linux cgroups
 
 🧠 How Docker Works Internally
-
+-----------------------------------------------------------------------------
 ## Docker uses:
 
 Docker Client → You run commands
@@ -61,18 +46,7 @@ Docker Engine → Core runtime
 
 Docker Registry → Stores images (e.g., Docker Hub)
 
-## Architecture Flow:
-docker run nginx
-        ↓
-Docker Client
-        ↓
-Docker Daemon
-        ↓
-Pull Image (if not exists)
-        ↓
-Create Container
-        ↓
-Run Process
+--------------------------------------------------------------------------------
 
 ## 📦 What is a Docker Image?
 
@@ -94,7 +68,7 @@ Application code
 Runtime
 
 Images are built using Dockerfile.
-
+----------------------------------------------------------------------------------
 ## 🚀 What is a Container?
 
 A container is:
@@ -176,16 +150,40 @@ Kubernetes deployments (Kubernetes)
 Cloud deployment (Amazon EKS)
 
 Consistent environments
+----------------------------------------------------------
 
+## 🖥 Virtual Machines vs Containers
+Feature	Virtual Machine	Docker Container
+OS	Full OS per VM	Shares Host OS
+Size	GBs	MBs
+Boot Time	Minutes	Seconds
+Performance	Heavy	Lightweight
+Isolation	Hardware-level	Process-level
 
+Containers are lightweight because they use:
 
+Linux Namespaces
 
-# Containerization vs Virtualization
+Linux cgroups
 
-# Docker vs Virtual Machine
+--------------------------------------------------------------
 
 # Docker Installation & Its
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04
 
 # Architecture
 
+## Architecture Flow:
+docker run nginx
+        ↓
+Docker Client
+        ↓
+Docker Daemon
+        ↓
+Pull Image (if not exists)
+        ↓
+Create Container
+        ↓
+Run Process
+------------------------------------------------------------------
 # Docker Adhoc Commands
