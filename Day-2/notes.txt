@@ -1,0 +1,254 @@
+Today our topics to cover is 
+
+Dockerfile 
+What is a Dockerfile?
+
+A Dockerfile is a text file that contains step-by-step instructions to build a Docker image.
+It tells Docker:
+
+Which base OS to use
+
+What software to install
+
+What code to copy
+
+How to run the application
+
+
+A Dockerfile is a declarative script that defines how to build a Docker image by specifying base image, dependencies, configurations, and runtime commands.
+
+Why Do We Need Dockerfile?
+
+Without Dockerfile:
+
+You must manually install Python
+
+Install dependencies
+
+Copy code
+
+Run app
+
+With Dockerfile:
+
+Everything is automated
+
+Reproducible builds
+
+Same environment everywhere (Dev / QA / Prod)
+
+CI/CD friendly
+
+
+single Docker file 
+
+# Step 1: Base image
+FROM python:3.11-slim
+
+# Step 2: Set working directory
+WORKDIR /app
+
+# Step 3: Copy dependencies file
+COPY requirements.txt .
+
+# Step 4: Install dependencies
+RUN pip install -r requirements.txt
+
+# Step 5: Copy application code
+COPY . .
+
+# Step 6: Expose port
+EXPOSE 8000
+
+# Step 7: Run application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+multistage dockerfile 
+# Stage 1 - Builder
+FROM python:3.11-slim AS builder
+
+WORKDIR /install
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+
+# Stage 2 - Runtime
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY --from=builder /install /usr/local
+COPY . .
+
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+How Dockerfile Works Internally
+
+Each instruction creates a layer.
+
+Example:
+
+FROM  → Layer 1
+COPY  → Layer 2
+RUN   → Layer 3
+CMD   → Final instruction
+
+
+Docker caches layers for faster rebuilds
+
+Important Dockerfile Instructions
+Instruction	Purpose
+FROM	      Base image
+WORKDIR	    Set working directory
+COPY	      Copy files
+ADD	        Copy + extract (rarely used)
+RUN	        Execute command during build
+CMD	        Default run command
+ENTRYPOINT	Main executable
+EXPOSE	    Inform container port
+ENV	        Set environment variable
+USER	      Run as non-root
+
+Docker Image 
+
+single stage dockerfile
+
+docker build -f Dockerfile.single -t devops-rajendra:single .
+
+docker run -d -p 8000:8000 --name rajendra-app devops-rajendra:single
+
+docker ps 
+
+docker ps -a 
+
+docker logs --tail 200 rajendra-app
+
+docker image ls 
+
+
+docker tag devops-rajendra:single rajendra123/devops-rajendra:1.0.0
+
+docker rmi rajendra123/devops-rajendra:1.0.0   # problems of doign this way 
+
+docker inspect devops-rajendra:single 
+
+docker history devops-rajendra:single
+
+docker pull nginx
+
+docker pull python:3.11-slim
+
+docker login
+docker push rajendra123/devops-rajendra:v1
+
+docker save -o myimage.tar devops-rajendra:v1
+
+docker load -i myimage.tar
+
+Prune Unused Images (Cleanup Production Servers)
+docker image prune
+
+docker image prune -a
+
+docker system df
+
+docker images -f dangling=true
+docker rmi $(docker images -f dangling=true -q)
+
+
+Real Production Debugging Scenario
+❌ Error:
+no space left on device
+
+✅ Fix:
+docker system prune -a
+
+
+
+docker multi stage dockerfile build 
+docker build -f Dockerfile.multi -t devops-rajendra:multi .
+
+run the docker contianer
+docker run -d -p 8005:8000 --name rajendra-app devops-rajendra:multi
+
+check the app logs 
+docker logs --tail 200 rajendra-app 
+
+check the logs with stream 
+docker logs --tail 200 rajendra-app -f 
+
+go inside container
+docker exec -it rajendra-app 
+
+# docker docker iamge 
+docker rmi devops-rajendra:multi
+remove container 
+docker rm rajendra-app
+
+
+
+
+Docker Container 
+
+What is a Container?
+
+Image → Blueprint
+
+Container → Running instance of image
+
+docker run -d --name my-nginx -p 8080:80 nginx
+
+docker run -d -p 8005:8000 --name rajendra-app devops-rajendra:multi
+
+docker ps 
+
+docker ps -a 
+
+docker stop my-nginx
+
+docker start my-nginx
+
+docker restart my-nginx
+
+
+docker rm my-nginx
+
+docker rm my-nginx -f 
+
+docker logs -f my-nginx
+
+docker exec -it my-nginx /bin/bash
+
+
+docker inspect my-nginx
+
+docker stats
+
+docker cp my-nginx:/etc/nginx/nginx.conf .
+
+
+docker cp test.txt my-nginx:/tmp/
+
+remove all the stoped containers 
+docker container prune
+ 
+Case 1: Container keeps restarting
+
+Check:
+
+docker logs container-name
+
+
+Check exit code:
+
+docker inspect container-name | grep ExitCode
+
+
+Debugging steps 
+
