@@ -1,0 +1,235 @@
+1️⃣ What is image scanning
+2️⃣ What is Trivy
+3️⃣ How to install Trivy
+4️⃣ How to scan Docker images
+5️⃣ Report generation (JSON / HTML / SARIF)
+6️⃣ CI/CD integration
+7️⃣ Why it is critical in production
+
+🔐 1️⃣ What is Docker Image Scanning?
+
+Docker images may contain:
+
+OS vulnerabilities (Ubuntu, Alpine, etc.)
+
+Outdated packages
+
+Application library vulnerabilities (Python, Node, Java)
+
+Hardcoded secrets
+
+Misconfigurations
+
+Image scanning detects these issues before deploying to production.
+
+🔎 2️⃣ What is Trivy?
+
+Aqua Security developed
+Trivy
+
+It is:
+
+Open-source
+
+Fast
+
+Simple CLI
+
+Supports container images, filesystem, Git repos, Kubernetes
+
+🔥 3️⃣ Install Trivy
+On Linux
+sudo apt install wget
+wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.0_Linux-64bit.deb
+sudo dpkg -i trivy_0.50.0_Linux-64bit.deb
+
+
+Or using Docker:
+
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+aquasec/trivy image nginx
+
+🐳 4️⃣ Scan Docker Image
+Basic scan
+trivy image nginx:latest
+
+
+Output shows:
+
+CRITICAL
+
+HIGH
+
+MEDIUM
+
+LOW vulnerabilities
+
+CVE IDs
+
+Fix versions
+
+Scan Specific Image
+trivy image myapp:1.0
+
+Scan Local Dockerfile directory
+trivy fs .
+
+📊 5️⃣ Report Generation
+
+Very important for CI/CD and compliance.
+
+JSON Report
+trivy image -f json -o report.json nginx
+
+Table Format (default)
+trivy image nginx
+
+HTML Report
+  
+trivy image -f template \
+--template "@contrib/html.tpl" \
+-o report.html nginx
+
+SARIF Report (Used in GitHub Security tab)
+trivy image -f sarif -o report.sarif nginx
+
+
+Used in:
+
+GitHub security scanning integration.
+
+🚨 6️⃣ Fail Build If Vulnerabilities Found
+
+In CI/CD (Very Important 🔥)
+
+trivy image --exit-code 1 --severity CRITICAL nginx
+
+
+If CRITICAL vulnerability found → build fails.
+
+🔁 7️⃣ CI/CD Integration Example (Jenkins)
+stage('Security Scan') {
+    steps {
+        sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL myapp:latest'
+    }
+}
+
+
+✔ Stops insecure image deployment
+✔ Security Shift Left
+
+🔐 8️⃣ What Does Trivy Scan?
+Type	Example
+OS Packages	OpenSSL
+Language deps	requirements.txt
+Secrets	AWS keys
+IaC	Terraform
+Kubernetes YAML	Misconfigurations
+  
+💥 9️⃣ Why Image Scanning Is So Important?
+1️⃣ Prevent Production Attacks
+
+If image has vulnerable OpenSSL → Hacker can exploit.
+
+2️⃣ Supply Chain Security
+
+You might pull:
+
+docker pull python:3.9
+
+
+But base image may have vulnerabilities.
+
+3️⃣ Compliance Requirements
+
+ISO 27001
+
+SOC2
+
+PCI-DSS
+
+Require vulnerability scanning.
+
+4️⃣ DevSecOps Practice
+
+Security integrated into pipeline.
+
+Shift-left security.
+
+🔥 10️⃣ Real Production Example
+
+Suppose:
+
+Your Django app uses:
+
+Django==2.2
+
+
+Trivy detects:
+
+CVE-XXXX
+
+Remote Code Execution vulnerability
+
+Solution:
+
+Upgrade:
+
+Django==4.x
+
+📌 11️⃣ Advanced Trivy Usage
+Scan Kubernetes Cluster
+trivy k8s cluster
+
+Scan Dockerfile for misconfig
+trivy config .
+
+Scan Private Registry
+trivy image myregistry.com/myapp:1.0
+
+🔥 12️⃣ Interview Questions (Important)
+Q1: Difference between Clair and Trivy?
+
+Trivy:
+
+Faster
+
+Simple
+
+Multi-target scanning
+
+Q2: Can Trivy scan running containers?
+
+Yes.
+
+trivy image container_id
+
+Q3: How to reduce vulnerabilities?
+
+Use smaller base image (Alpine)
+
+Update packages
+
+Remove unnecessary packages
+
+Multi-stage builds
+
+🚀 13️⃣ Best Practices (For Your DevOps Profile)
+
+Since you work with:
+
+AWS
+
+Docker
+
+Kubernetes
+
+CI/CD
+
+You should:
+
+✔ Scan images before pushing to ECR
+✔ Integrate Trivy in Jenkins
+✔ Fail pipeline on HIGH/CRITICAL
+✔ Generate HTML report artifact
+✔ Upload SARIF to GitHub Security
