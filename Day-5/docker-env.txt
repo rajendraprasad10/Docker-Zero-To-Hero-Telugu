@@ -1,0 +1,40 @@
+ENV Variables in Docker
+A) Using -e flag
+docker run -e DB_HOST=localhost -e DB_PORT=5432 myapp
+
+B) Using Dockerfile
+ENV APP_ENV=production
+ENV DB_HOST=postgres
+
+C) Using --env-file
+docker run --env-file .env myapp
+
+🔹.env File
+
+Example .env:
+
+DB_HOST=postgres
+DB_PORT=5432
+SECRET_KEY=mysecret
+
+In Docker Compose:
+services:
+  app:
+    image: myapp
+    env_file:
+      - .env
+
+mportant:
+
+.env is automatically read by docker-compose
+
+Used for variable substitution also
+
+Example:
+
+image: myapp:${VERSION}
+
+
+.env
+
+VERSION=1.2
