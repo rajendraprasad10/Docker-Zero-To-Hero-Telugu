@@ -1,148 +1,137 @@
 Docker Networks
 ===============
 
---> Docker networks are used to establish communication between containers.
---> If both the containers are same network we can establish the connection.
---> If you are not mention any network, while creating a container, It will be created in "default bridge network".
---> By default docker have three networks
+Docker Networks – Complete Guide
+🔹 What is Docker Network?
 
-     1. bridge [default]
-     2. host
-     3. none
+1. Docker networks are used to enable communication between containers.
 
-How to list a docker networks?
-------------------------------
+2. Containers can communicate with each other only if they are in the same network.
+
+3. If you do not specify any network while creating a container, it will automatically be attached to the default bridge network.
+
+By default, Docker provides three networks:
+bridge (default)
+host
+none
+
+list networks 
 
 docker network ls
 
-How to see the container is created in which network?
-------------------------------------------------------
+How to Check Which Network a Container Is Using?
+docker inspect <container-id>
 
-docker inspect <cid>
+How to Check Whether Two Containers Are Connected?
 
+step-1
+docker exec -it rajendra-app /bin/bash
 
-How to check both the containers are connected or not?
--------------------------------------------------------
-
-step 0: create a two containers.
-
-step 1: go inside the container one
-
-docker exec -it mavenwebapp /bin/bash
-
-step 2: ping with another container ip
-
+Step 2: Install ping utility (if required)
 yum update
 yum install -y iputils
 
-
-
-
+Step 3: Ping the second container using its IP
 ping 172.17.0.3
-
 curl -v telnet://172.17.0.3:8080
 
-NOTE: In default bridge network only ip's will work to connect another container not a container names.
 
-Dis advantage of bridge n/w: If container restarted we are not guarantee to get same IP
+⚠ Note:
+In the default bridge network, containers can communicate only using IP addresses, not container names.
 
+Disadvantage of Default Bridge Network
+If a container restarts, its IP address may change. So IP-based communication is not reliable.
 
+Q: What is the difference between Default Bridge and Custom Bridge Network?
+Default Bridge                                   	Custom Bridge
+Communication only through IP address	     Communication through IP and Container Name
+No automatic DNS resolution	               Automatic DNS resolution enabled
+Less flexible	                              More flexible and recommended
 
-
-IQ] what is the difference between default bridge network and custom bridge network?
-
-Ans: Incase of default bridge network the communication can happen through only IP address. Where as in custom bridge network the communication can happen through the IP address/ container name.
-
-
-How to create a network in docker?
-----------------------------------------
-
-Syntax: docker network create -d <driver> <networkname>
-
-EX: docker network create -d bridge jionetwork
+How to Create a Custom Network?
+Syntax:
+docker network create -d <driver> <network-name>
+example 
+docker network create -d bridge jionetwork
 docker network ls
 
-How IPs are allocating to container?
-------------------------------------
+How Are IPs Allocated to Containers?
 docker inspect <network-name>
 
-How to remove a unused networks?
---------------------------------
+Docker automatically assigns IP addresses from the network’s subnet.
 
-docker system prune or docker network prune  or docker network rm <nwtwork-name>
+How to Remove Unused Networks?
+docker system prune
+
+docker network prune
+
+docker network rm <network-name>
+
+How to Create a Container in a Specific Network?
+
+docker run -d -p 8080:8080 --network devopsrajendra --name rajendra-app-1 devops-rajendra:single
+
+docker run -d -p 8080:8080 --network devopsrajendra --name rajendra-app-2 devops-rajendra:single
 
 
-How to create a container in network?
--------------------------------------
 
-docker run -d -p 8080:8080 --network jionetwork --name mavenwebapp kkeducation123456/maven-web-app:1.2
-
-docker run -d -p 8081:8080 --network jionetwork --name javawebapp kkeducation123456/maven-web-app:1.2
-
+Test Name-Based Communication
 
 docker exec -it javawebapp bash
 ping mavenwebapp
 
+In a custom bridge network, containers can communicate using container names.
 
 
-=================================================================
+Can a Container Be Part of Multiple Networks?
 
+Yes. A container can be connected to multiple networks.
 
-NOTE: same container might part of another networks also.
+How to Connect a Running Container to Another Network?
 
-How to add that container to another network?
-
-docker network connect  jionetwork javawebappbridge
-
-docker inspect javawebappbridge
-
----------------------------------
-
-How to disconnect the container from network?
-
-docker network disconnect  jionetwork javawebappbridge
-
+docker network connect devopsrajendranetwork rajendra-app-1
 docker inspect javawebappbridge
 
 
-===================================================================
+How to Disconnect a Container from a Network?
+docker network disconnect jionetwork javawebappbridge
+docker inspect javawebappbridge
 
 
-What is docker host network?
-----------------------------
+What is Docker Host Network?
 
-If we create container in host network, Container will not have an IP address.
+If a container is created using the host network:
+It does NOT get a separate IP address.
+It uses the host machine’s network stack directly.
 
-NOTE: We can not create more than one container with same container port in the host network.
-
-NOTE: you can not create custom host network like bridge
-
-
-EX: docker run -d --network host --name javawebapp kkeducation123456/maven-web-app:1.2
-    
-     docker inspect 1ef68b5d5d80
+docker run -d --network host --name javawebapp kkeducation123456/maven-web-app:1.2
+docker inspect <container-id>
 
 
+Important Notes:
 
-=========================================================================================
-
-What is none network?
----------------------
-
---> If you create containers in none network, Container will not have an IP address.
---> we can not access these containers from outside or from any containers or internally.
+You cannot run multiple containers exposing the same port in host network.
+You cannot create a custom host network like bridge.
 
 
+What is None Network?
 
-==========================================================================================
+If you create a container using the none network:
 
-
-NOTE: The scope of the bridge/host/none with the docker server only, To overcome this problem we are using "overlay" network [multi host networks]
-
-IQ] what is overlay network?
-
-Establishing connection between containers in different docker servers.
+It will not get an IP address.
+It has no external connectivity.
+It cannot communicate with other containers or outside world.
 
 
+What is Overlay Network?
 
-================================================================
+The scope of bridge / host / none networks is limited to a single Docker host.
+
+To enable communication between containers running on different Docker servers, we use overlay network.
+
+🔥 Interview Question
+
+Q: What is an Overlay Network?
+
+Answer:
+An overlay network allows communication between containers running on different Docker hosts. It is mainly used in Docker Swarm for multi-host networking.
