@@ -1,12 +1,26 @@
-1️⃣ What is image scanning
-2️⃣ What is Trivy
-3️⃣ How to install Trivy
-4️⃣ How to scan Docker images
-5️⃣ Report generation (JSON / HTML / SARIF)
-6️⃣ CI/CD integration
-7️⃣ Why it is critical in production
+1. What is image scanning
+2. What is Trivy
+3. How to install Trivy
+4. How to scan Docker images
+5. Report generation (JSON / HTML / SARIF)
+6. CI/CD integration
+7. Why it is critical in production
 
-🔐 1️⃣ What is Docker Image Scanning?
+=============================================
+
+What Does Trivy Scan?
+
+Type	Example
+OS Packages	OpenSSL
+Language deps	requirements.txt
+Secrets	AWS keys
+IaC	Terraform
+Kubernetes YAML	Misconfigurations
+
+
+==============================================
+
+What is Docker Image Scanning?
 
 Docker images may contain:
 
@@ -22,7 +36,9 @@ Misconfigurations
 
 Image scanning detects these issues before deploying to production.
 
-🔎 2️⃣ What is Trivy?
+==============================================
+
+What is Trivy?
 
 Aqua Security developed
 Trivy
@@ -37,19 +53,31 @@ Simple CLI
 
 Supports container images, filesystem, Git repos, Kubernetes
 
-🔥 3️⃣ Install Trivy
-On Linux
-sudo apt install wget
-wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.0_Linux-64bit.deb
-sudo dpkg -i trivy_0.50.0_Linux-64bit.deb
+==================================================
 
+Install Trivy
+On Linux
+sudo apt-get update
+sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | \
+sudo tee /etc/apt/sources.list.d/trivy.list
+
+sudo apt-get update
+sudo apt-get install trivy
+
+trivy --version
+====================================
 
 Or using Docker:
 
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 aquasec/trivy image nginx
+=============================================
 
-🐳 4️⃣ Scan Docker Image
+Scan Docker Image
 Basic scan
 trivy image nginx:latest
 
@@ -67,6 +95,7 @@ LOW vulnerabilities
 CVE IDs
 
 Fix versions
+=====================
 
 Scan Specific Image
 trivy image myapp:1.0
@@ -74,7 +103,8 @@ trivy image myapp:1.0
 Scan Local Dockerfile directory
 trivy fs .
 
-📊 5️⃣ Report Generation
+
+Report Generation
 
 Very important for CI/CD and compliance.
 
@@ -90,24 +120,23 @@ trivy image -f template \
 --template "@contrib/html.tpl" \
 -o report.html nginx
 
-SARIF Report (Used in GitHub Security tab)
-trivy image -f sarif -o report.sarif nginx
 
+===============================================
+Show Only HIGH & CRITICAL
 
-Used in:
+trivy image --severity HIGH,CRITICAL nginx:latest
 
-GitHub security scanning integration.
+============================================
 
-🚨 6️⃣ Fail Build If Vulnerabilities Found
-
-In CI/CD (Very Important 🔥)
+Fail CI/CD If Vulnerabilities Found
+trivy image --exit-code 1 --severity CRITICAL myimage:latest
 
 trivy image --exit-code 1 --severity CRITICAL nginx
 
 
 If CRITICAL vulnerability found → build fails.
 
-🔁 7️⃣ CI/CD Integration Example (Jenkins)
+CI/CD Integration Example (Jenkins)
 stage('Security Scan') {
     steps {
         sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL myapp:latest'
@@ -115,16 +144,103 @@ stage('Security Scan') {
 }
 
 
-✔ Stops insecure image deployment
-✔ Security Shift Left
+Stops insecure image deployment
 
-🔐 8️⃣ What Does Trivy Scan?
-Type	Example
-OS Packages	OpenSSL
-Language deps	requirements.txt
-Secrets	AWS keys
-IaC	Terraform
-Kubernetes YAML	Misconfigurations
+Shift Left Model (Modern DevSecOps)
+Planning → Secure Coding → Build + Security Scan → CI/CD Security → Production
+
+Suppose you build a Docker image:
+
+Old Way:
+
+  Build Docker image
+  
+  Deploy to Kubernetes
+  
+  Security team scans later
+  
+  CRITICAL vulnerabilities found
+
+Rollback needed 😵
+
+  Shift Left Approach:
+  
+  Developer writes Dockerfile
+  
+  During CI → run Trivy
+  
+  If CRITICAL found → build fails
+  
+  Fix before merging
+  
+  No production risk
+
+
+=============================================
+
+genrate the json report 
+
+trivy image -f json -o report.json nginx:latest
+
+Generate Table Format
+trivy image -f table nginx:latest
+
+=================================================
+
+Scan Local Project (Filesystem Scan)
+trivy fs .
+
+Great for:
+
+Python requirements.txt
+
+package.json
+
+pom.xml
+
+=====================================================
+
+Scan Dockerfile for Misconfiguration
+trivy config Dockerfile
+
+Explain:
+
+Insecure USER root
+
+Missing HEALTHCHECK
+
+Exposed secrets
+
+
+======================================================
+
+Scan Kubernetes YAML
+trivy config k8s-deployment.yaml
+
+Very trending content for DevSecOps
+
+===========================================================
+
+Scan Running Container
+trivy image $(docker ps -q)
+
+===============================================================
+
+Scan and Ignore Unfixed Issues
+trivy image --ignore-unfixed nginx:latest
+
+==============================================================
+
+Scan Specific Package Type
+trivy image --vuln-type os nginx:latest
+
+trivy image --vuln-type library nginx:latest
+
+==========================================================
+Generate HTML Report (Team Demo)
+
+trivy image --format template --template "@contrib/html.tpl" -o report.html nginx:latest
+
   
 💥 9️⃣ Why Image Scanning Is So Important?
 1️⃣ Prevent Production Attacks
@@ -200,8 +316,6 @@ Multi-target scanning
 
 Q2: Can Trivy scan running containers?
 
-Yes.
-
 trivy image container_id
 
 Q3: How to reduce vulnerabilities?
@@ -210,19 +324,11 @@ Use smaller base image (Alpine)
 
 Update packages
 
-Remove unnecessary packages
+Remove unnecessary packages in Multi-stage builds
 
-Multi-stage builds
-
-🚀 13️⃣ Best Practices (For Your DevOps Profile)
+Best Practices (For Your DevOps Profile)
 
 Since you work with:
-
-AWS
-
-Docker
-
-Kubernetes
 
 CI/CD
 
