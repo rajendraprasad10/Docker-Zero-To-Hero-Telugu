@@ -103,6 +103,9 @@ trivy image myapp:1.0
 Scan Local Dockerfile directory
 trivy fs .
 
+dockerfile scan 
+
+trivy config Dockerfile
 
 Report Generation
 
